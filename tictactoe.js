@@ -1,19 +1,15 @@
 class GameBoard {
   constructor() {
-    this.board = [
-      [new Cell(), new Cell(), new Cell()],
-      [new Cell(), new Cell(), new Cell()],
-      [new Cell(), new Cell(), new Cell()],
-    ];
+    this.board = [];
   }
 
-  setCell() {}
-
-  displayBoard() {
+  initializeBoard() {
     for (let i = 0; i < 3; i++) {
+      let row = [];
       for (let j = 0; j < 3; j++) {
-        // write the html logic here
+        row.push(new Cell());
       }
+      this.board.push(row);
     }
   }
 
@@ -90,8 +86,44 @@ class GameBoard {
 
 class Cell {
   constructor() {
-    this.content = "";
+    this.content = " ";
   }
 }
 
-class Player {}
+class GameCycle {
+  constructor() {
+    this.gameBoard = new GameBoard();
+    this.gameBoard.initializeBoard();
+    this.currentTurn = "x";
+  }
+
+  displayBoard() {
+    let boardDiv = document.getElementById("board");
+    boardDiv.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+      let rowDiv = document.createElement("div");
+      rowDiv.classList.add("row");
+      for (let j = 0; j < 3; j++) {
+        const cell = document.createElement("button");
+        cell.id = i.toString + j.toString;
+        cell.textContent = this.gameBoard.board[i][j].content;
+        cell.addEventListener("click", () => {
+          this.setCell(i, j);
+        });
+        rowDiv.appendChild(cell);
+      }
+      boardDiv.appendChild(rowDiv);
+    }
+  }
+
+  setCell(i, j) {
+    if (this.gameBoard.board[i][j] == "") {
+      this.gameBoard.board[i][j] = this.currentTurn;
+      this.currentTurn = this.currentTurn == "x" ? "o" : "x";
+    }
+    this.displayBoard();
+  }
+}
+
+let game = new GameCycle();
+game.displayBoard();
