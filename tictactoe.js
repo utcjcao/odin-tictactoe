@@ -4,6 +4,7 @@ class GameBoard {
   }
 
   initializeBoard() {
+    this.board = [];
     for (let i = 0; i < 3; i++) {
       let row = [];
       for (let j = 0; j < 3; j++) {
@@ -86,7 +87,7 @@ class GameBoard {
 
 class Cell {
   constructor() {
-    this.content = " ";
+    this.content = "";
   }
 }
 
@@ -95,6 +96,7 @@ class GameCycle {
     this.gameBoard = new GameBoard();
     this.gameBoard.initializeBoard();
     this.currentTurn = "x";
+    this.gameFinished = false;
   }
 
   displayBoard() {
@@ -117,13 +119,37 @@ class GameCycle {
   }
 
   setCell(i, j) {
-    if (this.gameBoard.board[i][j] == "") {
-      this.gameBoard.board[i][j] = this.currentTurn;
+    if (this.gameFinished) {
+      return;
+    }
+    if (this.gameBoard.board[i][j].content == "") {
+      this.gameBoard.board[i][j].content = this.currentTurn;
       this.currentTurn = this.currentTurn == "x" ? "o" : "x";
     }
+
+    this.displayBoard();
+
+    let winner = this.gameBoard.checkWin();
+    if (winner != "none") {
+      const winnerDiv = document.getElementById("winner");
+      winnerDiv.textContent = winner + " wins!";
+      this.gameFinished = true;
+    }
+  }
+
+  resetGame() {
+    const winnerDiv = document.getElementById("winner");
+    winnerDiv.textContent = "";
+    this.gameFinished = false;
+    this.currentTurn = "x";
+    this.gameBoard.initializeBoard();
     this.displayBoard();
   }
 }
 
 let game = new GameCycle();
+
+const restartBtn = document.getElementById("restart");
+restartBtn.addEventListener("click", () => game.resetGame());
+
 game.displayBoard();
